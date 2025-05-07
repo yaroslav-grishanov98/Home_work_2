@@ -13,7 +13,7 @@ pip install -r requirements.txt
 from models import load_categories_from_json
 
 ### class Product
-Класс для описания продукта с параметрами
+Класс для описания продукта и его параметров
 
 **Тесты**
 
