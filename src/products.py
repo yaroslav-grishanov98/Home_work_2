@@ -5,13 +5,13 @@ class Product:
         """Инициализирует объект Product"""
         self.name = name
         self.description = description
-        self._price = None
+        self.__price = None
         self.price = price
         self.quantity = quantity
 
     @property
     def price(self):
-        return self._price
+        return self.__price
 
     @price.setter
     def price(self, value):
@@ -20,14 +20,15 @@ class Product:
         if value <= 0:
             print("Цена не должна быть нулем или отрицательной")
             return
-        if self._price is not None and value < self._price:
+        if self.__price is not None and value < self.__price:
             answer = input(
-                f"Попытка снизить цену с {self._price} до {value}, подтвердите:"
+                f"Попытка снизить цену с {self.__price} до {value}, подтвердите:"
             )
             if answer.lower() != "y":
                 print("Изменение цены отменено")
                 return
-        self._price = value
+        self.__price = value
+
 
     @classmethod
     def new_product(cls, data, existing_products=None):
