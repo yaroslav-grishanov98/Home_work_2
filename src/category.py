@@ -25,10 +25,7 @@ class Category:
         """Возвращает строку со списком товаров"""
         if not self.__products:
             return "Список товаров пуст."
-        return "\n".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
-            for product in self.__products
-        )
+        return "\n".join(str(product) for product in self.__products)
 
     @property
     def product_count(self):
@@ -37,3 +34,16 @@ class Category:
     def list_product(self):
         """Возвращает список всех названий товаров в категории"""
         return [product.name for product in self.__products]
+
+    def __str__(self):
+        """Возвращает строковое представление категории"""
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт"
+
+    def __add__(self, other):
+        """Позволяет сложить две категории"""
+        if not isinstance(other, Category):
+            return NotImplemented
+        total_self = sum(product.price * product.quantity for product in self._Category__products)
+        total_other = sum(product.price * product.quantity for product in other._Category__products)
+        return total_self + total_other

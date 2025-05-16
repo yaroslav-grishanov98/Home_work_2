@@ -60,3 +60,19 @@ def test_new_product_updates_existing():
     assert p is existing[0]
     assert p.quantity == 8
     assert p.price == 200
+
+
+def test_str():
+    """Проверяет корректность объекта Product"""
+    prod = Product("Товар1", "Описание1", 100.0, 10)
+    expected = "Товар1, 100.0 руб. Остаток: 10 шт."
+    assert str(prod) == expected
+
+
+def test_add():
+    """Проверяет сложение двух объектов продукта"""
+    prod_a = Product("Товар A", "Описание A", 100, 10)
+    prod_b = Product("Товар B", "Описание B", 200, 2)
+    total = prod_a + prod_b
+    expected = 100 * 10 + 200 * 2
+    assert total == expected

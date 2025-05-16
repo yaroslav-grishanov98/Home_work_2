@@ -29,7 +29,6 @@ class Product:
                 return
         self.__price = value
 
-
     @classmethod
     def new_product(cls, data, existing_products=None):
         """Создает новый объект из словаря"""
@@ -46,3 +45,13 @@ class Product:
                         product.price = price
                     return product
         return cls(name, description, price, quantity)
+
+    def __str__(self):
+        """Возвращает строковое представление товара"""
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Позволяет сложить два товара"""
+        if not isinstance(other, Product):
+            return NotImplemented
+        return (self.price * self.quantity) + (other.price * other.quantity)
