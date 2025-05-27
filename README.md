@@ -33,7 +33,7 @@ from models import load_categories_from_json
 
 * Тест загрузки продуктов и категорий из json файла
 
-### class category
+### class Category
 Класс, описывающий категорию товаров
 
 ### Функция add_product
@@ -106,7 +106,7 @@ from models import load_categories_from_json
 
 * Тестирует создание объекта LawnGrass
 
-
+### 
 
 
 
