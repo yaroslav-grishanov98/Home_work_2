@@ -33,8 +33,8 @@ def test_str_category():
 
 def test_add():
     """Проверяет сложение двух объектов категории"""
-    from src.products import Product
     from src.category import Category
+    from src.products import Product
 
     prod1 = Product("Товар1", "Описание1", 100.0, 10)
     prod2 = Product("Товар2", "Описание2", 200.0, 5)
