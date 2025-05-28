@@ -33,7 +33,7 @@ from models import load_categories_from_json
 
 * Тест загрузки продуктов и категорий из json файла
 
-### class category
+### class Category
 Класс, описывающий категорию товаров
 
 ### Функция add_product
@@ -92,7 +92,21 @@ from models import load_categories_from_json
 
 * Проверяет сложение двух объектов продукта
 
+### Подкласс Smartphone для класса Product
+Класс, описывающий смартфон
 
+**Тесты**:
+
+* Тестирует создание объекта Smartphone
+
+### Подкласс LawnGrass для класса Product
+Класс, описывающий траву для газона
+
+**Тесты**:
+
+* Тестирует создание объекта LawnGrass
+
+### 
 
 
 

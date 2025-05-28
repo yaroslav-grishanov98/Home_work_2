@@ -1,4 +1,4 @@
-from src.products import Product
+from src.products import LawnGrass, Product, Smartphone
 
 
 def test_price_setter_accepts_positive(monkeypatch):
@@ -76,3 +76,38 @@ def test_add():
     total = prod_a + prod_b
     expected = 100 * 10 + 200 * 2
     assert total == expected
+
+
+def test_smartphone():
+    """Тестирует создание объекта Smartphone"""
+    phone = Smartphone(
+        name="Iphone 16",
+        description="Флагманский смартфон",
+        price=80000,
+        quantity=5,
+        efficiency=95,
+        model="16 Pro",
+        memory=256,
+        color="Черный",
+    )
+    assert phone.name == "Iphone 16"
+    assert phone.efficiency == 95
+    assert "Модель: 16 Pro" in str(phone)
+    print("Смартфон тест пройден")
+
+
+def test_lawn_grass():
+    """Тестирует создание объекта LawnGrass"""
+    grass = LawnGrass(
+        name="Газонная трава",
+        description="Качественная трава для газона",
+        price=500,
+        quantity=50,
+        country="Нидерланды",
+        germination_period=14,
+        color="Зеленый",
+    )
+    assert grass.country == "Нидерланды"
+    assert "Срок прорастания: 14" in str(grass)
+    assert grass.color == "Зеленый"
+    print("Трава для газона прошла тест")
