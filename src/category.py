@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.products import Product
+from products import Product
 
 
 class BaseEntity(ABC):
