@@ -1,11 +1,37 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class DebugInitMixin:
+    """Класс для отладки и вывода информации при создании объекта"""
+    def __init__(self, *args, **kwargs):
+        cls_name = self.__class__.__name__
+        print(f"Создан объект класса {cls_name} с параметрами {args}, {kwargs}")
+        super().__init__(*args, **kwargs)
+
+
+class BaseProduct(ABC):
+    """Абстрактный базовый класс для продуктов"""
+    def __init__(self, *args, name, price, **kwargs):
+        self.name = name
+        self.price = price
+        super().__init__(**kwargs)
+
+    @abstractmethod
+    def get_description(self):
+        pass
+
+    def get_price(self):
+        return self.price
+
+
+class Product(DebugInitMixin, BaseProduct):
     """Класс, описывающий товар"""
 
-    def __init__(self, name, description, price, quantity):
+    def __init__(self, *args, name, description, price, quantity, **kwargs):
         """Инициализирует объект Product"""
-        self.name = name
+        self.__price = None  # инициализация перед super
+        super().__init__(name=name, price=price, **kwargs)
         self.description = description
-        self.__price = None
         self.price = price
         self.quantity = quantity
 
@@ -44,11 +70,11 @@ class Product:
                     if price > product.price:
                         product.price = price
                     return product
-        return cls(name, description, price, quantity)
+        return cls(name=name, description=description, price=price, quantity=quantity)
 
     def __str__(self):
         """Возвращает строковое представление товара"""
-        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+        return self.get_description()
 
     def __add__(self, other):
         """Позволяет сложить два товара"""
@@ -58,35 +84,64 @@ class Product:
             )
         return (self.price * self.quantity) + (other.price * other.quantity)
 
+    def get_description(self):
+        """Возвращает описание продукта с характеристиками"""
+        return f"{self.name}: {self.description}. Цена: {self.price} руб. Количество: {self.quantity}"
+
 
 class Smartphone(Product):
     """Класс, описывающий смартфон"""
 
     def __init__(
-        self, name, description, price, quantity, efficiency, model, memory, color
+        self,
+        *args,
+        name,
+        description,
+        price,
+        quantity,
+        efficiency,
+        model,
+        memory,
+        color,
+        **kwargs,
     ):
-        super().__init__(name, description, price, quantity)
+        super().__init__(
+            name=name, description=description, price=price, quantity=quantity, **kwargs
+        )
         self.efficiency = efficiency
         self.model = model
         self.memory = memory
         self.color = color
 
-    def __str__(self):
-        base_str = super().__str__()
-        return f"{base_str}, Модель: {self.model}, Производительность: {self.efficiency}, Память: {self.memory}, Цвет: {self.color}"
+    def get_description(self):
+        """Функция описывающая основные характеристики смартфона"""
+        base_desc = super().get_description()
+        return f"{base_desc}, Модель: {self.model}, Производительность: {self.efficiency}, Память: {self.memory}, Цвет: {self.color}"
 
 
 class LawnGrass(Product):
     """Класс, описывающий траву для газона"""
 
     def __init__(
-        self, name, description, price, quantity, country, germination_period, color
+        self,
+        *args,
+        name,
+        description,
+        price,
+        quantity,
+        country,
+        germination_period,
+        color,
+        **kwargs,
     ):
-        super().__init__(name, description, price, quantity)
+        super().__init__(
+            name=name, description=description, price=price, quantity=quantity, **kwargs
+        )
         self.country = country
         self.germination_period = germination_period
         self.color = color
 
-    def __str__(self):
-        base_str = super().__str__()
-        return f"{base_str}, Страна: {self.country}, Срок прорастания: {self.germination_period}, Цвет: {self.color}"
+    def get_description(self):
+        """Функция, описывающая основные характеристики травы"""
+        base_desc = super().get_description()
+        return f"{base_desc}, Страна: {self.country}, Срок прорастания: {self.germination_period}, Цвет: {self.color}"
