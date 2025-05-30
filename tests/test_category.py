@@ -1,48 +1,171 @@
 import pytest
 
-from src.category import Category
-from src.products import Product
+from src.category import Order
+from src.products import LawnGrass, Product, Smartphone
 
 
-def test_add_product():
-    """Проверяет корректное добавление объекта Product в категорию"""
-    product1 = Product("Товар1", "Описание1", 100, 10)
-    product2 = Product("Товар2", "Описание2", 200, 5)
-    category = Category("Категория1", "Описание категории", [product1])
-    category.add_product(product2)
-    assert product2 in category._Category__products
+def test_price_setter_accepts_positive(monkeypatch):
+    """Проверяет, что сеттер price корректно устанавливает положительное значение цены"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    product.price = 200
+    assert product.price == 200
 
 
-def test_add_product_type_error():
-    """Проверяет, что при попытке добавить в категорию объект не типа Product вызывается исключение"""
-    product1 = Product("Товар1", "Описание1", 100, 10)
-    category = Category("Категория1", "Описание категории", [product1])
+def test_price_setter_rejects_zero_or_negative(capsys):
+    """Проверяет, что при установке нулевой или отрицательной цены выводится предупреждение и цена не меняется"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    product.price = 0
+    captured = capsys.readouterr()
+    assert "Цена не должна быть нулем или отрицательной" in captured.out
+    assert product.price == 100
 
+    product.price = -10
+    captured = capsys.readouterr()
+    assert "Цена не должна быть нулем или отрицательной" in captured.out
+    assert product.price == 100
+
+
+def test_price_setter_confirmation_yes(monkeypatch):
+    """Проверяет, что снижения цены с подтверждением пользователя устанавливается новая цена"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    inputs = iter(["y"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    product.price = 50
+    assert product.price == 50
+
+
+def test_price_setter_confirmation_no(monkeypatch, capsys):
+    """Проверяет, что при отказе пользователя снижение цены не происходит"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    inputs = iter(["n"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    product.price = 50
+    captured = capsys.readouterr()
+    assert "Изменение цены отменено" in captured.out
+    assert product.price == 100
+
+
+def test_new_product_creates_new():
+    """Проверяет создание нового объекта Product из словаря"""
+    data = {"name": "Товар", "description": "Описание", "price": 100, "quantity": 5}
+    product = Product.new_product(data)
+    assert product.name == "Товар"
+    assert product.description == "Описание"
+    assert product.price == 100
+    assert product.quantity == 5
+
+
+def test_new_product_updates_existing():
+    """Проверяет обновление существующего объекта Product при повторном создании"""
+    existing = [Product(name="Товар", description="Описание", price=100, quantity=5)]
+    data = {"name": "Товар", "description": "Описание", "price": 200, "quantity": 3}
+    product = Product.new_product(data, existing_products=existing)
+    assert product is existing[0]
+    assert product.quantity == 8
+    assert product.price == 200
+
+
+def test_str_returns_description():
+    """Проверяет, что __str__ возвращает корректное описание продукта"""
+    product = Product(name="Товар1", description="Описание1", price=100.0, quantity=10)
+    expected_str = "Товар1: Описание1. Цена: 100.0 руб. Количество: 10"
+    assert str(product) == expected_str
+
+
+def test_add_products():
+    """Проверяет корректность сложения двух объектов Product"""
+    prod1 = Product(name="Товар A", description="Описание A", price=100, quantity=10)
+    prod2 = Product(name="Товар B", description="Описание B", price=200, quantity=2)
+    total = prod1 + prod2
+    expected = 100 * 10 + 200 * 2
+    assert total == expected
+
+
+def test_smartphone_creation_and_description():
+    """Проверяет создание объекта Smartphone и корректность его описания"""
+    phone = Smartphone(
+        name="Iphone 16",
+        description="Флагманский смартфон",
+        price=80000,
+        quantity=5,
+        efficiency=95,
+        model="16 Pro",
+        memory=256,
+        color="Черный",
+    )
+    assert phone.name == "Iphone 16"
+    assert phone.efficiency == 95
+    desc = str(phone)
+    assert "Модель: 16 Pro" in desc
+    assert "Производительность: 95" in desc
+
+
+def test_lawn_grass_creation_and_description():
+    """Проверяет создание объекта LawnGrass и корректность описания"""
+    grass = LawnGrass(
+        name="Газонная трава",
+        description="Качественная трава для газона",
+        price=500,
+        quantity=50,
+        country="Нидерланды",
+        germination_period=14,
+        color="Зеленый",
+    )
+    assert grass.country == "Нидерланды"
+    desc = str(grass)
+    assert "Страна: Нидерланды" in desc
+    assert "Срок прорастания: 14" in desc
+
+
+def test_debug_init_mixin_output(capsys):
+    """Проверяет, что DebugInitMixin выводит сообщение при создании объекта"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    captured = capsys.readouterr()
+    assert "Создан объект класса Product" in captured.out
+
+
+def test_add_type_error():
+    """Проверяет, что при сложении объектов разных классов вызывается TypeError"""
+    prod = Product(name="Товар1", description="Описание1", price=100, quantity=5)
+    phone = Smartphone(
+        name="Телефон",
+        description="Смартфон",
+        price=15000,
+        quantity=3,
+        efficiency=80,
+        model="X",
+        memory=128,
+        color="Черный",
+    )
     with pytest.raises(TypeError):
-        category.add_product("не продукт")
+        _ = prod + phone
 
 
-def test_str_category():
-    """Проверяет корректность строкового представления объекта Category"""
-    prod1 = Product("Товар1", "Описание1", 100.0, 10)
-    prod2 = Product("Товар2", "Описание2", 200.0, 5)
-    category1 = Category("Категория1", "Описание категории", [prod1, prod2])
-    expected_str = "Категория1, количество продуктов: 15 шт"
-    assert str(category1) == expected_str
+def test_order_creation_and_total_price():
+    """Тестирует создание объекта Order и проверяет корректность подсчёта общей стоимости заказа"""
+    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    order = Order(
+        name="Заказ1", description="Описание заказа", product=product, quantity=3
+    )
+    assert order.product == product
+    assert order.quantity == 3
+    assert order.total_price() == 300
 
 
-def test_add():
-    """Проверяет сложение двух объектов категории"""
-    from src.category import Category
-    from src.products import Product
+def test_order_product_type_error():
+    """Тестирует, что при попытке создания с объектом, не являющимся экземпляром Product, выбрасывается TypeError"""
+    with pytest.raises(TypeError):
+        Order(
+            name="Заказ1", description="Ошибка заказа", product="не продукт", quantity=5
+        )
 
-    prod1 = Product("Товар1", "Описание1", 100.0, 10)
-    prod2 = Product("Товар2", "Описание2", 200.0, 5)
-    prod3 = Product("Товар3", "Описание3", 50.0, 20)
 
-    category1 = Category("Категория1", "Описание категории", [prod1, prod2])
-    category2 = Category("Категория2", "Описание категории 2", [prod3])
-
-    total = category1 + category2
-    expected_total = (100.0 * 10 + 200.0 * 5) + (50.0 * 20)
-    assert total == expected_total
+def test_order_display_info():
+    """Тестирует корректность вывода информации методом display_info"""
+    product = Product(name="Товар", description="Описание", price=150, quantity=7)
+    order = Order(name="Заказ1", description="Тест заказ", product=product, quantity=2)
+    info = order.display_info()
+    assert "Заказ: Заказ1 - Тест заказ" in info
+    assert f"Товар: {product.name}" in info
+    assert "Количество: 2" in info
+    assert f"Итоговая стоимость: {product.price * 2} рублей" in info

@@ -1,13 +1,26 @@
-from src.products import Product
+from abc import ABC, abstractmethod
+
+from products import Product
 
 
-class Category:
+class BaseEntity(ABC):
+    """Абстрактный класс, с общими свойствами для категории и заказа"""
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+    @abstractmethod
+    def display_info(self):
+        pass
+
+
+class Category(BaseEntity):
     """Класс, описывающий категорию товаров"""
 
     def __init__(self, name, description, products=None):
         """Инициализирует объект Category"""
-        self.name = name
-        self.description = description
+        super().__init__(name, description)
         self.__products = []
         if products:
             for product in products:
@@ -51,3 +64,29 @@ class Category:
             product.price * product.quantity for product in other._Category__products
         )
         return total_self + total_other
+
+    def display_info(self):
+        """Функция демонстрирует наличие товара"""
+        return f"Категория: {self.name} - {self.description}, количество товаров: {self.product_count}"
+
+
+class Order(BaseEntity):
+    """Класс, записывающий заказ одного товара"""
+
+    def __init__(self, name, description, product: Product, quantity: int):
+        super().__init__(name, description)
+        if not isinstance(product, Product):
+            raise TypeError("product должен быть экземпляром Product")
+        self.product = product
+        self.quantity = quantity
+
+    def total_price(self):
+        return self.product.price * self.quantity
+
+    def display_info(self):
+        return (
+            f"Заказ: {self.name} - {self.description}\n"
+            f"Товар: {self.product.name}\n"
+            f"Количество: {self.quantity}\n"
+            f"Итоговая стоимость: {self.total_price()} рублей"
+        )
