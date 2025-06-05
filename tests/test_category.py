@@ -1,6 +1,11 @@
+import os
+import sys
+
 import pytest
 
-from src.category import Order
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+
+from src.category import Category, Order
 from src.products import LawnGrass, Product, Smartphone
 
 
@@ -119,7 +124,7 @@ def test_lawn_grass_creation_and_description():
 
 def test_debug_init_mixin_output(capsys):
     """Проверяет, что DebugInitMixin выводит сообщение при создании объекта"""
-    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    Product(name="Товар", description="Описание", price=100, quantity=10)
     captured = capsys.readouterr()
     assert "Создан объект класса Product" in captured.out
 
@@ -169,3 +174,17 @@ def test_order_display_info():
     assert f"Товар: {product.name}" in info
     assert "Количество: 2" in info
     assert f"Итоговая стоимость: {product.price * 2} рублей" in info
+
+
+def test_category_average():
+    """Тестирует подсчет средней цены всех товаров"""
+    p1 = Product(name="Product1", description="Desc1", price=100, quantity=2)
+    p2 = Product(name="Product2", description="Desc2", price=200, quantity=3)
+
+    category = Category(name="Category1", description="Desc_category", products=[p1, p2])
+    avg_price = category.average_price()
+    expected_avg = (p1.price + p2.price) / 2
+    assert avg_price == expected_avg, f"Ожидалось  {expected_avg}, получено {avg_price}"
+
+    empty_category = Category(name="Empty", description="Empty apple", products=[])
+    assert empty_category.average_price() == 0, "Ожидался 0 для пустой категории"
