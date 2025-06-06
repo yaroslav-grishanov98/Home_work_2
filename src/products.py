@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 class DebugInitMixin:
     """Класс для отладки и вывода информации при создании объекта"""
+
     def __init__(self, *args, **kwargs):
         cls_name = self.__class__.__name__
         print(f"Создан объект класса {cls_name} с параметрами {args}, {kwargs}")
@@ -11,6 +12,7 @@ class DebugInitMixin:
 
 class BaseProduct(ABC):
     """Абстрактный базовый класс для продуктов"""
+
     def __init__(self, *args, name, price, **kwargs):
         self.name = name
         self.price = price
@@ -29,7 +31,9 @@ class Product(DebugInitMixin, BaseProduct):
 
     def __init__(self, *args, name, description, price, quantity, **kwargs):
         """Инициализирует объект Product"""
-        self.__price = None  # инициализация перед super
+        if quantity == 0:
+            raise ValueError("Товар с 0 количеством не может быть добавлен")
+        self.__price = None
         super().__init__(name=name, price=price, **kwargs)
         self.description = description
         self.price = price

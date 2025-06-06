@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from products import Product
+from src.products import Product
 
 
 class BaseEntity(ABC):
@@ -68,6 +68,15 @@ class Category(BaseEntity):
     def display_info(self):
         """Функция демонстрирует наличие товара"""
         return f"Категория: {self.name} - {self.description}, количество товаров: {self.product_count}"
+
+    def average_price(self):
+        """Рассчитывает среднюю цену всех товаров в категории"""
+        try:
+            total_price = sum(product.price for product in self._Category__products)
+            count = len(self._Category__products)
+            return total_price / count
+        except ZeroDivisionError:
+            return 0
 
 
 class Order(BaseEntity):

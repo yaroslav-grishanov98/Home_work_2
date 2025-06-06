@@ -118,7 +118,7 @@ def test_lawn_grass_creation_and_description():
 
 def test_debug_init_mixin_output(capsys):
     """Проверяет, что DebugInitMixin выводит сообщение при создании объекта"""
-    product = Product(name="Товар", description="Описание", price=100, quantity=10)
+    Product(name="Товар", description="Описание", price=100, quantity=10)
     captured = capsys.readouterr()
     assert "Создан объект класса Product" in captured.out
 
@@ -138,3 +138,13 @@ def test_add_type_error():
     )
     with pytest.raises(TypeError):
         _ = prod + phone
+
+
+def test_product_zero():
+    """Тестирует создание объекта с нулевым значением"""
+    try:
+        Product(name="Apple", description="Green", price=100, quantity=0)
+    except ValueError as e:
+        assert str(e) == "Товар с 0 количеством не может быть добавлен"
+    else:
+        assert False, "Исключение ValueError не вызвано при 0 количестве"
